@@ -1,0 +1,14 @@
+# Dash App Core
+dash[diskcache]
+dash-bootstrap-components
+
+# Data Handling
+pandas
+
+# Visualization Libraries from Lecture
+matplotlib
+seaborn
+squarify
+
+# For .env file management (if we add it back later)
+python-dotenv
