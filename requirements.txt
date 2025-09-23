@@ -12,3 +12,6 @@ squarify
 
 # For .env file management (if we add it back later)
 python-dotenv
+
+# For deployment
+gunicorn
