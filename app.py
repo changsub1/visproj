@@ -38,6 +38,8 @@ def render_tab_content(tab_id):
 # 콜백 등록
 register_callbacks(app)
 
+server = app.server
+
 # 서버 실행
 if __name__ == '__main__':
     app.run(debug=True)
