@@ -245,19 +245,22 @@ def register_callbacks(app):
         Output('visualization-graph', 'figure'),
         Input('update-graph-button', 'n_clicks'),
         State('dataset-dropdown', 'value'),
-        # Chart builder states
         State('chart-builder-chart-type', 'value'),
         State('chart-builder-xaxis', 'value'),
         State('chart-builder-yaxis', 'value'),
         State('chart-builder-agg', 'value'),
         State('chart-builder-group', 'value'),
-        State('chart-builder-top-n', 'value'), # Top N 추가
-        # Filter states
+        State('chart-builder-top-n', 'value'),
         State('h-filter-cols', 'data'),
-        [State(f'h-filter-{i}', 'value') for i in range(5)],
+        State('h-filter-0', 'value'),
+        State('h-filter-1', 'value'),
+        State('h-filter-2', 'value'),
+        State('h-filter-3', 'value'),
+        State('h-filter-4', 'value'),
         prevent_initial_call=True
     )
-    def update_graph_final(n_clicks, db_file, chart_type, xaxis, yaxis, agg, group, top_n, h_cols, filter_values):
+    def update_graph_final(n_clicks, db_file, chart_type, xaxis, yaxis, agg, group, top_n, h_cols, f0, f1, f2, f3, f4):
+        filter_values = [f0, f1, f2, f3, f4]
         if not all([db_file, chart_type, xaxis, agg]):
             return px.bar(title="차트 빌더의 모든 필수 항목(차트 종류, X축, Y축 집계 방식)을 선택해주세요.")
         
