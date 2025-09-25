@@ -7,7 +7,7 @@ import math
 import os
 from urllib.parse import urlparse, parse_qs
 
-def collect_and_save_data(api_url, db_name, start_year, end_year):
+def collect_and_save_data(api_url, db_name, start_year, end_year, delay=1.0):
     """
     지정된 기간 동안 API 데이터를 수집하여 사용자가 지정한 이름의 SQLite DB에 저장합니다.
     진행 로그를 문자열로 반환합니다.
@@ -76,7 +76,7 @@ def collect_and_save_data(api_url, db_name, start_year, end_year):
                 log_messages.append(f"{year}년: {page_no} 페이지 수집... (현재까지 총 {len(all_data)}건)")
                 
                 page_no += 1
-                time.sleep(1)
+                time.sleep(delay)
             
             except requests.exceptions.JSONDecodeError:
                 log_messages.append(f"JSON 디코딩 오류. 서버 원본 응답: {response.text}")
@@ -92,12 +92,19 @@ def collect_and_save_data(api_url, db_name, start_year, end_year):
 
     try:
         df = pd.DataFrame(all_data)
+        # 데이터 타입 자동 변환: 숫자 칼럼은 숫자로, 나머지는 문자로 처리
         for col in df.columns:
-            df[col] = df[col].astype(str)
-            
+            df[col] = pd.to_numeric(df[col], errors='ignore')
+        
+        # 1. DB에 저장
         conn = sqlite3.connect(db_name)
         df.to_sql(table_name, conn, if_exists='replace', index=False)
         conn.close()
-        return f"성공! 총 {len(all_data)}건의 데이터를 '{db_name}' 파일에 저장했습니다.\n\n--- 로그 ---\n{final_log}"
+
+        # 2. 엑셀 파일로 저장
+        excel_path = os.path.splitext(db_name)[0] + '.xlsx'
+        df.to_excel(excel_path, index=False)
+        
+        return f"성공! 총 {len(all_data)}건의 데이터를 '{db_name}' 및 '{excel_path}' 파일에 저장했습니다.\n\n--- 로그 ---\n{final_log}"
     except Exception as e:
-        return f"DB 저장 중 오류 발생: {e}\n\n--- 로그 ---\n{final_log}"
+        return f"DB 또는 엑셀 저장 중 오류 발생: {e}\n\n--- 로그 ---\n{final_log}"

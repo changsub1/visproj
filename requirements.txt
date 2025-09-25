@@ -4,6 +4,7 @@ dash-bootstrap-components
 
 # Data Handling
 pandas
+openpyxl
 
 # Visualization Libraries from Lecture
 matplotlib
